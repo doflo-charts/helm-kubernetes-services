@@ -112,7 +112,7 @@ jobs:
           name: Generate chart repo index
           command: |
             cd assets
-            helm repo index --url "https://github.com/dofloinc/helm-kubernetes-services/releases/download/${CIRCLE_TAG}" .
+            helm repo index --url "https://github.com/doflo-charts/helm-kubernetes-services/releases/download/${CIRCLE_TAG}" .
       - run:
           command: upload-github-release-assets ./assets/*
 workflows:
