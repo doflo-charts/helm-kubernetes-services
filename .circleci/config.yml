@@ -50,41 +50,15 @@ jobs:
           <<: *install_helm_client
       # Fail the build if the pre-commit hooks don't pass. Note: if you run pre-commit install locally, these hooks will
       # execute automatically every time before you commit, ensuring the build never fails at this step!
-      - run:
-          command: |
-            pip install pre-commit==1.11.2 cfgv==2.0.1
-            pre-commit install
-            pre-commit run --all-files
+      # - run:
+      #     command: |
+      #       pip install pre-commit==1.11.2 cfgv==2.0.1
+      #       pre-commit install
+      #       pre-commit run --all-files
       - persist_to_workspace:
           root: /home/circleci
           paths:
             - project
-  test:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: /home/circleci
-      - run:
-          <<: *install_gruntwork_utils
-      - run:
-          command: setup-minikube --minikube-version "${MINIKUBE_VERSION}" --k8s-version "${KUBERNETES_VERSION}"
-      - run:
-          <<: *install_helm_client
-      - run:
-          name: run tests
-          command: |
-            mkdir -p /tmp/logs
-            cd test
-            go mod tidy
-            run-go-tests --packages "-tags all ." --timeout 60m | tee /tmp/logs/all.log
-          no_output_timeout: 3600s
-      - run:
-          command: terratest_log_parser --testlog /tmp/logs/all.log --outputdir /tmp/logs
-          when: always
-      - store_artifacts:
-          path: /tmp/logs
-      - store_test_results:
-          path: /tmp/logs
   deploy:
     <<: *defaults
     steps:
@@ -126,18 +100,9 @@ workflows:
         context:
           - doFlo Admin
 
-    - test:
-        requires:
-          - setup
-        filters:
-          tags:
-            only: /^v.*/
-        context:
-          - doFlo Admin
-
     - deploy:
         requires:
-          - test
+          - setup
         filters:
           tags:
             only: /^v.*/
