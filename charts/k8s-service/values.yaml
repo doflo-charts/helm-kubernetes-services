@@ -219,7 +219,7 @@ minPodsAvailable: 0
 service:
   enabled: true
   ports:
-    app:
+    http-app:
       port: 80
       targetPort: http
       protocol: TCP
